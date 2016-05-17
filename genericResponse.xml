@@ -1,0 +1,20 @@
+<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope" xmlns:a="http://www.w3.org/2005/08/addressing">
+	<s:Header>
+		<a:Action s:mustUnderstand="1">http://www.silae.fr/IIWCF/AppelComResponse</a:Action>
+		<a:RelatesTo>urn:uuid:{{uuid}}</a:RelatesTo>
+	</s:Header>
+	<s:Body>
+		<AppelComResponse xmlns="http://www.silae.fr/">
+			<AppelComResult xmlns:b="http://schemas.microsoft.com/2003/10/Serialization/Arrays" xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+				<b:KeyValueOfanyTypeanyType>
+					<b:Key i:type="c:int" xmlns:c="http://www.w3.org/2001/XMLSchema">1</b:Key>
+					<b:Value i:type="c:base64Binary" xmlns:c="http://www.w3.org/2001/XMLSchema">{{{response}}}</b:Value>
+				</b:KeyValueOfanyTypeanyType>
+				<b:KeyValueOfanyTypeanyType>
+					<b:Key i:type="c:int" xmlns:c="http://www.w3.org/2001/XMLSchema">0</b:Key>
+					<b:Value i:type="c:int" xmlns:c="http://www.w3.org/2001/XMLSchema">2</b:Value>
+				</b:KeyValueOfanyTypeanyType>
+			</AppelComResult>
+		</AppelComResponse>
+	</s:Body>
+</s:Envelope>

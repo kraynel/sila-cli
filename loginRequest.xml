@@ -1,0 +1,45 @@
+<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope" xmlns:a="http://www.w3.org/2005/08/addressing">
+	<s:Header>
+		<a:Action s:mustUnderstand="1">http://www.silae.fr/IIWCF/AppelCom</a:Action>
+		<a:MessageID>urn:uuid:{{uuid}}</a:MessageID>
+		<a:ReplyTo>
+			<a:Address>http://www.w3.org/2005/08/addressing/anonymous</a:Address>
+		</a:ReplyTo>
+		<a:To s:mustUnderstand="1">http://www.silaexpert01.fr/SILAE/IWCF/IWCF.svc</a:To>
+	</s:Header>
+	<s:Body>
+		<AppelCom xmlns="http://www.silae.fr/">
+			<HT xmlns:b="http://schemas.microsoft.com/2003/10/Serialization/Arrays" xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+				<b:KeyValueOfanyTypeanyType>
+					<b:Key i:type="c:string" xmlns:c="http://www.w3.org/2001/XMLSchema">$CLASSE</b:Key>
+					<b:Value i:type="c:string" xmlns:c="http://www.w3.org/2001/XMLSchema">CM_IDENTIFICATION</b:Value>
+				</b:KeyValueOfanyTypeanyType>
+				<b:KeyValueOfanyTypeanyType>
+					<b:Key i:type="c:string" xmlns:c="http://www.w3.org/2001/XMLSchema">P1</b:Key>
+					<b:Value i:type="c:int" xmlns:c="http://www.w3.org/2001/XMLSchema">0</b:Value>
+				</b:KeyValueOfanyTypeanyType>
+				<b:KeyValueOfanyTypeanyType>
+					<b:Key i:type="c:string" xmlns:c="http://www.w3.org/2001/XMLSchema">$APP</b:Key>
+					<b:Value i:type="c:string" xmlns:c="http://www.w3.org/2001/XMLSchema">SilaeClient.exe</b:Value>
+				</b:KeyValueOfanyTypeanyType>
+				<b:KeyValueOfanyTypeanyType>
+					<b:Key i:type="c:string" xmlns:c="http://www.w3.org/2001/XMLSchema">$RSAC</b:Key>
+					<b:Value i:type="b:ArrayOfKeyValueOfanyTypeanyType">
+						<b:KeyValueOfanyTypeanyType>
+							<b:Key i:type="c:string" xmlns:c="http://www.w3.org/2001/XMLSchema">K</b:Key>
+							<b:Value i:type="c:string" xmlns:c="http://www.w3.org/2001/XMLSchema">&lt;RSAKeyValue&gt;&lt;Modulus&gt;{{{clientKey}}}&lt;/Modulus&gt;&lt;Exponent&gt;AQAB&lt;/Exponent&gt;&lt;/RSAKeyValue&gt;</b:Value>
+						</b:KeyValueOfanyTypeanyType>
+						<b:KeyValueOfanyTypeanyType>
+							<b:Key i:type="c:string" xmlns:c="http://www.w3.org/2001/XMLSchema">KS</b:Key>
+							<b:Value i:type="c:int" xmlns:c="http://www.w3.org/2001/XMLSchema">1</b:Value>
+						</b:KeyValueOfanyTypeanyType>
+					</b:Value>
+				</b:KeyValueOfanyTypeanyType>
+				<b:KeyValueOfanyTypeanyType>
+					<b:Key i:type="c:string" xmlns:c="http://www.w3.org/2001/XMLSchema">$METHODE</b:Key>
+					<b:Value i:type="c:string" xmlns:c="http://www.w3.org/2001/XMLSchema">NOP</b:Value>
+				</b:KeyValueOfanyTypeanyType>
+			</HT>
+		</AppelCom>
+	</s:Body>
+</s:Envelope>

@@ -1,0 +1,46 @@
+<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope" xmlns:a="http://www.w3.org/2005/08/addressing">
+	<s:Header>
+		<a:Action s:mustUnderstand="1">http://www.silae.fr/IIWCF/AppelComResponse</a:Action>
+		<a:RelatesTo>urn:uuid:{{uuid}}</a:RelatesTo>
+	</s:Header>
+	<s:Body>
+		<AppelComResponse xmlns="http://www.silae.fr/">
+			<AppelComResult xmlns:b="http://schemas.microsoft.com/2003/10/Serialization/Arrays" xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+				<b:KeyValueOfanyTypeanyType>
+					<b:Key i:type="c:string" xmlns:c="http://www.w3.org/2001/XMLSchema">$R</b:Key>
+					<b:Value i:type="b:ArrayOfKeyValueOfanyTypeanyType">
+						<b:KeyValueOfanyTypeanyType>
+							<b:Key i:type="c:string" xmlns:c="http://www.w3.org/2001/XMLSchema">EM</b:Key>
+							<b:Value i:type="c:string" xmlns:c="http://www.w3.org/2001/XMLSchema" />
+						</b:KeyValueOfanyTypeanyType>
+						<b:KeyValueOfanyTypeanyType>
+							<b:Key i:type="c:string" xmlns:c="http://www.w3.org/2001/XMLSchema">EN</b:Key>
+							<b:Value i:type="c:int" xmlns:c="http://www.w3.org/2001/XMLSchema">0</b:Value>
+						</b:KeyValueOfanyTypeanyType>
+					</b:Value>
+				</b:KeyValueOfanyTypeanyType>
+				<b:KeyValueOfanyTypeanyType>
+					<b:Key i:type="c:string" xmlns:c="http://www.w3.org/2001/XMLSchema">$T</b:Key>
+					<b:Value i:type="c:string" xmlns:c="http://www.w3.org/2001/XMLSchema">SILAE.CObjetRetour</b:Value>
+				</b:KeyValueOfanyTypeanyType>
+				<b:KeyValueOfanyTypeanyType>
+					<b:Key i:type="c:string" xmlns:c="http://www.w3.org/2001/XMLSchema">$RSAS</b:Key>
+					<b:Value i:type="b:ArrayOfKeyValueOfanyTypeanyType">
+						<b:KeyValueOfanyTypeanyType>
+							<b:Key i:type="c:string" xmlns:c="http://www.w3.org/2001/XMLSchema">K</b:Key>
+							<b:Value i:type="c:string" xmlns:c="http://www.w3.org/2001/XMLSchema">&lt;RSAKeyValue&gt;&lt;Modulus&gt;{{{serverKey}}}&lt;/Modulus&gt;&lt;Exponent&gt;AQAB&lt;/Exponent&gt;&lt;/RSAKeyValue&gt;</b:Value>
+						</b:KeyValueOfanyTypeanyType>
+						<b:KeyValueOfanyTypeanyType>
+							<b:Key i:type="c:string" xmlns:c="http://www.w3.org/2001/XMLSchema">KS</b:Key>
+							<b:Value i:type="c:int" xmlns:c="http://www.w3.org/2001/XMLSchema">1</b:Value>
+						</b:KeyValueOfanyTypeanyType>
+					</b:Value>
+				</b:KeyValueOfanyTypeanyType>
+				<b:KeyValueOfanyTypeanyType>
+					<b:Key i:type="c:string" xmlns:c="http://www.w3.org/2001/XMLSchema">$USR</b:Key>
+					<b:Value i:type="c:string" xmlns:c="http://www.w3.org/2001/XMLSchema">{{userId}}</b:Value>
+				</b:KeyValueOfanyTypeanyType>
+			</AppelComResult>
+		</AppelComResponse>
+	</s:Body>
+</s:Envelope>
