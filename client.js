@@ -20,10 +20,10 @@ var clientKey = new NodeRSA(undefined, undefined, {encryptionScheme: 'pkcs1'}).g
 var clientPublic = clientKey.exportKey('components-public').n.slice(1).toString("base64");
 
 console.log("Loading request templates");
-var loginRequest = Handlebars.compile(fs.readFileSync('loginRequest.xml').toString());
-var loginResponse = Handlebars.compile(fs.readFileSync('loginResponse.xml').toString());
-var genericRequest = Handlebars.compile(fs.readFileSync('genericRequest.xml').toString());
-var genericResponse = Handlebars.compile(fs.readFileSync('genericResponse.xml').toString());
+var loginRequest = Handlebars.compile(fs.readFileSync('./soap/loginRequest.xml').toString());
+var loginResponse = Handlebars.compile(fs.readFileSync('./soap/loginResponse.xml').toString());
+var genericRequest = Handlebars.compile(fs.readFileSync('./soap/genericRequest.xml').toString());
+var genericResponse = Handlebars.compile(fs.readFileSync('./soap/genericResponse.xml').toString());
 
 var aesClient = {key: crypto.randomBytes(32), iv: crypto.randomBytes(32)};
 var aesServer = null;
