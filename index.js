@@ -7,21 +7,13 @@
 var program = require('commander');
 var client = require('./client');
 
-function dateArg(val, defaultDate) {
-  if(val) {
-    return new Date(val);
-  }
-
-  return defaultDate;
-}
-
 program
   .version('0.0.1')
   .option('-u, --username <email>', 'Your email')
   .option('-p, --password <password>', 'Your password')
-  .option('-l, --list', 'List all available payslips')
+  .option('-l, --list-only', 'Only list all available payslips')
   .option('-i, --id <payslip-id>', 'Download the specified payslip')
-  .option('-d, --date <YYYY-MM>', 'Download payslip for month', dateArg, Date.now())
+  .option('-d, --date <YYYY-MM>', 'Download payslip for month')
   .option('-o, --output <output-path>', 'Output path')
   .parse(process.argv);
 
@@ -30,4 +22,4 @@ if(!program.username || !program.password) {
   process.exit(1);
 }
 
-client.downloadLast(program.username, program.password, program.output);
+client.execute(program.username, program.password, program.listOnly, program.id, program.date, program.output);

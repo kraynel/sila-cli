@@ -28,7 +28,7 @@ function init() {
   aesServer = null;
 }
 
-function downloadLast(login, password, outputPath) {
+function execute(login, password, list, paySlipId, paySlipDate, outputPath) {
   init();
   var $usr, idPaiSalarie, idSuperviseur, idClient, idDroit, filename;
 
@@ -60,8 +60,6 @@ function downloadLast(login, password, outputPath) {
     return sendGenericRequest($usr, payload);
   })
   .then(function(serverResponse) {
-    console.log("AES exchange OK, requesting pdf list");
-
     cbaSerialization.setBuffer(serverResponse);
     result = cbaSerialization.readHashtable();
     deepInspect(result);
@@ -69,11 +67,35 @@ function downloadLast(login, password, outputPath) {
     var dataTable = result.value.$R.value.OR.value.dt.decoded;
     listPayslips(dataTable);
 
-    console.log("Download PDF #", dataTable[1].row[0].value.value);
-    var pdfDate = dataTable[2].row[0].value.value.toISOString().slice(0, 7);
+    if(list) process.exit(0);
+
+    var pdfIndex = -1;
+    if(paySlipId) {
+      for(var i=0; i<dataTable[0].row.length; i++) {
+        if(dataTable[1].row[i].value.value == paySlipId) {
+          pdfIndex = i;
+          break;
+        }
+      }
+      if(paySlipId < 0) {
+        console.log("Payslip id not found");
+        process.exit(1);
+      }
+    } else if (paySlipDate) {
+      for(var i=0; i<dataTable[0].row.length; i++) {
+        if(getMonth(dataTable[2].row[i].value.value) == paySlipDate) {
+          pdfIndex = i;
+          break;
+        }
+      }
+    }
+    if(pdfIndex < 0) pdfIndex = 0;
+
+    console.log("Download PDF #", dataTable[1].row[pdfIndex].value.value);
+    var pdfDate = getMonth(dataTable[2].row[pdfIndex].value.value);
     fileName = outputPath || 'bulletin_'+ pdfDate +'.pdf';
 
-    var payload = payloads.GenererPdf($usr, idDroit, idSuperviseur, idClient, idPaiSalarie, dataTable[1].row[0].value.value);
+    var payload = payloads.GenererPdf($usr, idDroit, idSuperviseur, idClient, idPaiSalarie, dataTable[1].row[pdfIndex].value.value);
     return sendGenericRequest($usr, payload);
   })
   .then(function(bulletinResponseBuffer){
@@ -185,10 +207,14 @@ function listPayslips(dataTable) {
       "Paie #",
       dataTable[1].row[i].value.value,
       " for month ",
-      dataTable[2].row[i].value.value
+      getMonth(dataTable[2].row[i].value.value)
     ].join(''));
   }
   console.log('------------');
+}
+
+function getMonth(paySlipDate) {
+  return paySlipDate.toISOString().slice(0, 7)
 }
 
 function getKey(body) {
@@ -204,5 +230,5 @@ function getUserId(body) {
 }
 
 module.exports = {
-  downloadLast: downloadLast
+  execute: execute
 }
