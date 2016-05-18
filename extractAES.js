@@ -16,16 +16,12 @@ function extractAESKey(buffer, rsaPrivateKey) {
   var ivKeySize = buffer.readInt32LE(4+rsaEncryptedAesKeySize);
   var ivKey = new Buffer(ivKeySize);
   buffer.copy(ivKey, 0, rsaEncryptedAesKeySize+8, ivKeySize + rsaEncryptedAesKeySize+8);
-  console.log("AESIV", ivKey);
 
   var aesKey = rsaPrivateKey.decrypt(rsaEncryptedAesKey);
-  console.log("AESKEY: ", aesKey.toString("base64"));
-
   return {key: aesKey, iv: ivKey};
 }
 
 function insertAESKey(payload, aesInfo, rsaPublicKey) {
-  console.log("Insert AES KEY", aesInfo);
   var encryptedPublicKey = rsaPublicKey.encrypt(aesInfo.key);
   var result = Buffer.concat([
     new Buffer("01", "hex"),
@@ -35,7 +31,6 @@ function insertAESKey(payload, aesInfo, rsaPublicKey) {
     aesInfo.iv,
     payload
   ])
-  console.log("result", result.toString("hex"));
   return result;
 }
 

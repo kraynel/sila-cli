@@ -2,6 +2,7 @@
   "dependencies": {
     "bignum": "^0.11.0",
     "body-parser": "^1.15.0",
+    "commander": "^2.9.0",
     "connect": "^3.4.1",
     "express": "^4.13.4",
     "handlebars": "^4.0.5",
@@ -10,5 +11,23 @@
     "request": "^2.72.0",
     "soap": "^0.14.0",
     "uuid": "^2.0.2"
-  }
+  },
+  "bin": {
+    "sila-cli": "./index.js"
+  },
+  "name": "silaexpert",
+  "description": "A command-line tool for download SilaExpert payslips.",
+  "version": "0.0.1",
+  "main": "index.js",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kraynel/silaexpert.git"
+  },
+  "author": "Kevin Raynel",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kraynel/silaexpert/issues"
+  },
+  "homepage": "https://github.com/kraynel/silaexpert#readme"
 }
