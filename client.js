@@ -7,7 +7,7 @@ var fs = require('fs');
 var Handlebars = require('Handlebars');
 var NodeRSA = require('node-rsa');
 var payloads = require('./payloads');
-var request = require('request');
+var request = require('request-promise');
 var uuid = require('uuid');
 var zlib = require('zlib');
 var util = require('util');
@@ -30,77 +30,83 @@ function init() {
 
 function downloadLast(login, password, outputPath) {
   init();
+  var $usr, idPaiSalarie, idSuperviseur, idClient, idDroit, filename;
+
   console.log("Sending login request");
-  sendLoginRequest(clientPublic, function($usr) {
-    console.log("RSA key exchange ok, got id", $usr);
-    exchangeAES(login, password, $usr, function(serverResponse) {
-      console.log("AES exchange OK, requesting pdf list");
-      cbaSerialization.setBuffer(serverResponse);
-      result = cbaSerialization.readHashtable();
-      deepInspect(result);
-      try {
-        var userInfo = result.value.$R.value.ONG1.value.P.value;
-      } catch(e) {
-        console.log("Bad user info.")
-        process.exit(1);
-      }
+  sendLoginRequest(clientPublic)
+  .then(function(usr) {
+    console.log("RSA key exchange ok, got id", usr);
+    $usr = usr;
+    return exchangeAES(login, password, $usr);
+  })
+  .then(function(serverResponse) {
+    cbaSerialization.setBuffer(serverResponse);
+    result = cbaSerialization.readHashtable();
+    deepInspect(result);
+    try {
+      var userInfo = result.value.$R.value.ONG1.value.P.value;
+    } catch(e) {
+      console.log("Bad user info.")
+      process.exit(1);
+    }
 
-      var idPaiSalarie = userInfo.ID_PAISALARIE.value;
-      var idSuperviseur = userInfo.ID_SUPERVISEUR_SVN.value;
-      var idClient = userInfo.ID_CLIENT.value;
-      var idDroit = userInfo.ID_DROIT.value;
+    idPaiSalarie = userInfo.ID_PAISALARIE.value;
+    idSuperviseur = userInfo.ID_SUPERVISEUR_SVN.value;
+    idClient = userInfo.ID_CLIENT.value;
+    idDroit = userInfo.ID_DROIT.value;
 
-      var payload = payloads.AcquisitionBulletins($usr, idDroit, idSuperviseur, idClient, idPaiSalarie);
-      sendGenericRequest($usr, payload, function(serverResponse) {
-        console.log("AES exchange OK, requesting pdf list");
+    console.log("AES exchange OK, requesting pdf list");
+    var payload = payloads.AcquisitionBulletins($usr, idDroit, idSuperviseur, idClient, idPaiSalarie);
+    return sendGenericRequest($usr, payload);
+  })
+  .then(function(serverResponse) {
+    console.log("AES exchange OK, requesting pdf list");
 
-        cbaSerialization.setBuffer(serverResponse);
-        result = cbaSerialization.readHashtable();
-        deepInspect(result);
+    cbaSerialization.setBuffer(serverResponse);
+    result = cbaSerialization.readHashtable();
+    deepInspect(result);
 
-        var dataTable = result.value.$R.value.OR.value.dt.decoded;
-        listPayslips(dataTable);
+    var dataTable = result.value.$R.value.OR.value.dt.decoded;
+    listPayslips(dataTable);
 
-        console.log("Download PDF #", dataTable[1].row[0].value.value);
-        var payload = payloads.GenererPdf($usr, idDroit, idSuperviseur, idClient, idPaiSalarie, dataTable[1].row[0].value.value);
-        sendGenericRequest($usr, payload, function(bulletinResponseBuffer){
-          cbaSerialization.setBuffer(bulletinResponseBuffer);
-          var result = cbaSerialization.readHashtable();
-          var pdfBuffer = result.value.$R.value.OR.value;
+    console.log("Download PDF #", dataTable[1].row[0].value.value);
+    var pdfDate = dataTable[2].row[0].value.value.toISOString().slice(0, 7);
+    fileName = outputPath || 'bulletin_'+ pdfDate +'.pdf';
 
-          var pdfDate = dataTable[2].row[0].value.value.toISOString().slice(0, 7);
-          var fileName = outputPath || 'bulletin_'+ pdfDate +'.pdf';
-          fs.writeFileSync(fileName, pdfBuffer);
-          console.log("Wrote", fileName);
-        });
-      });
-    });
+    var payload = payloads.GenererPdf($usr, idDroit, idSuperviseur, idClient, idPaiSalarie, dataTable[1].row[0].value.value);
+    return sendGenericRequest($usr, payload);
+  })
+  .then(function(bulletinResponseBuffer){
+    cbaSerialization.setBuffer(bulletinResponseBuffer);
+    var result = cbaSerialization.readHashtable();
+    var pdfBuffer = result.value.$R.value.OR.value;
+
+    fs.writeFileSync(fileName, pdfBuffer);
+    console.log("Wrote", fileName);
   });
 }
 
-function sendLoginRequest(publicKey, callback) {
+function sendLoginRequest(publicKey) {
   var fakeRequestBody = loginRequest({
     uuid: uuid.v4(),
     clientKey: publicKey
   });
 
-  request.post({
+  return request.post({
     url: url,
     body : fakeRequestBody,
     headers: {'Content-Type': 'application/soap+xml; charset=utf-8'}
-  }, function (error, response, body) {
-      if (!error && response.statusCode == 200) {
-        serverKey.importKey({
-          n: new Buffer(getKey(body), "base64"),
-          e: 65537
-        }, 'components-public');
-        callback(getUserId(body));
-      }
-    }
-  );
+  })
+  .then(function (body) {
+    serverKey.importKey({
+      n: new Buffer(getKey(body), "base64"),
+      e: 65537
+    }, 'components-public');
+    return getUserId(body);
+  });
 }
 
-function exchangeAES(login, password, clientId, callback) {
+function exchangeAES(login, password, clientId) {
   var payload = payloads.loginRequest(login, password, clientId);
   var encryptedPayload = extractAES.encrypt(payload, aesClient);
   var payloadWithKey = extractAES.insertAESKey(encryptedPayload, aesClient, serverKey);
@@ -111,22 +117,18 @@ function exchangeAES(login, password, clientId, callback) {
     payload: payloadWithKey.toString("base64")
   });
 
-  request.post({
+  return request.post({
     url: url,
     body : fakeRequestBody,
     headers: {'Content-Type': 'application/soap+xml; charset=utf-8'}
-  }, function (error, response, body) {
-      if (!error && response.statusCode == 200) {
-        var bufferPayload = new Buffer(getPayload(body), "base64");
-        aesServer = extractAES.extractAESKey(new Buffer(bufferPayload.slice(1).toString("hex"), "hex"), clientKey);
+  })
+  .then(function (body) {
+    var bufferPayload = new Buffer(getPayload(body), "base64");
+    aesServer = extractAES.extractAESKey(new Buffer(bufferPayload.slice(1).toString("hex"), "hex"), clientKey);
 
-        var cryptedBuffer = new Buffer(bufferPayload.slice(1 + 256 + 32 + 4 + 4).toString("hex"), "hex");
-        var decryptedBuffer = extractAES.decrypt(cryptedBuffer, aesServer);
-
-        callback(decryptedBuffer);
-      }
-    }
-  );
+    var cryptedBuffer = new Buffer(bufferPayload.slice(1 + 256 + 32 + 4 + 4).toString("hex"), "hex");
+    return extractAES.decrypt(cryptedBuffer, aesServer);
+  });
 }
 
 function sendGenericRequest($usr, payload, callback) {
@@ -141,19 +143,15 @@ function sendGenericRequest($usr, payload, callback) {
     payload: toSend.toString("base64")
   });
 
-  request.post({
+  return request.post({
     url: url,
     body : fakeRequestBody,
     headers: {'Content-Type': 'application/soap+xml; charset=utf-8'}
-  }, function (error, response, body) {
-      if (!error && response.statusCode == 200) {
-        var cryptedBuffer = new Buffer(getPayload(body), "base64").slice(1);
-
-        var decryptedBuffer = extractAES.decrypt(cryptedBuffer, aesServer);
-        callback(decryptedBuffer);
-      }
-    }
-  );
+  })
+  .then(function (body) {
+    var cryptedBuffer = new Buffer(getPayload(body), "base64").slice(1);
+    return extractAES.decrypt(cryptedBuffer, aesServer);
+  });
 }
 
 function deepInspect(data) {

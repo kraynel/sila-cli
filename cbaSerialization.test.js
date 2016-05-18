@@ -14,15 +14,6 @@ for(var file of fileNames) {
   cbaSerialization.setBuffer(request1);
   result = cbaSerialization.readHashtable();
 
-  for(var key in result) {
-    if(result[key] == 'SILAE.CM_SUPERVISION+CSupervisionContexte') {
-      var index = key.split('')[1];
-      console.log("GOT Supervision context for P", index)
-      cbaSerialization.setBuffer(result["P"+index].BA);
-      result["P"+index].decoded = cbaSerialization.readHashtable()
-    }
-  }
-
   deepInspect(result);
   console.log(util.inspect(result, false, null));
 
