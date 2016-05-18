@@ -155,7 +155,7 @@ function exchangeAES(login, password, clientId) {
 
 function sendGenericRequest($usr, payload, callback) {
   var encryptedPayload = extractAES.encrypt(payload, aesClient);
-  var toSend = Buffer.alloc(encryptedPayload.length + 1);
+  var toSend = new Buffer(encryptedPayload.length + 1);
   toSend[0] = 0;
   encryptedPayload.copy(toSend, 1);
 

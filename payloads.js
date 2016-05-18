@@ -1,7 +1,7 @@
 var serialization = require('./cbaSerialization.js')
 
 function loginRequest(login, password, $usr) {
-  var result = Buffer.alloc(1024*10);
+  var result = new Buffer(1024*10);
   serialization.setBuffer(result);
   serialization.writeHashtable({
     '$METHODE': { type: 12, value: 'Identification' },
@@ -21,7 +21,7 @@ function loginRequest(login, password, $usr) {
 function AcquisitionBulletins($usr, idDroit, idSuperviseur, idClient, idPaiSalarie) {
   var cSupervisionContexte = supervisionContext(idDroit, idSuperviseur);
 
-  var result = Buffer.alloc(1024*10);
+  var result = new Buffer(1024*10);
   serialization.setBuffer(result);
   serialization.writeHashtable({
       '$METHODE': { type: 12, value: 'AcquisitionBulletins' },
@@ -45,7 +45,7 @@ function AcquisitionBulletins($usr, idDroit, idSuperviseur, idClient, idPaiSalar
 }
 
 function supervisionContext(idDroit, idSuperviseur) {
-  var result = Buffer.alloc(1024*10);
+  var result = new Buffer(1024*10);
   serialization.setBuffer(result);
   serialization.writeHashtable({
      'Option_ListeRecursiveSupervises': { type: 2, value: true },
@@ -61,7 +61,7 @@ function GenererPdf($usr, idDroit, idSuperviseur, idClient, idPaiSalarie, idPaiB
   var arrayPaieSalarie = getIntArray([idPaiSalarie]);
   var arrayPaiBulletin = getIntArray([idPaiBulletin]);
 
-  var result = Buffer.alloc(1024*10);
+  var result = new Buffer(1024*10);
   serialization.setBuffer(result);
   serialization.writeHashtable({
      '$METHODE': { type: 12, value: 'ConstruirePDF' },
@@ -91,7 +91,7 @@ function GenererPdf($usr, idDroit, idSuperviseur, idClient, idPaiSalarie, idPaiB
 }
 
 function getIntArray(intArray) {
-  var result = Buffer.alloc((intArray.length + 1) * 4);
+  var result = new Buffer((intArray.length + 1) * 4);
   result.writeInt32LE(intArray.length);
   var offset = 4;
   for(var i=0; i<intArray.length; i++) {
@@ -105,7 +105,7 @@ function getIntArray(intArray) {
 function addPadding(buffer) {
   var paddingToAdd = 32 - buffer.length % 32;
   var bufferLength = buffer.length + paddingToAdd;
-  var result = Buffer.alloc(bufferLength);
+  var result = new Buffer(bufferLength);
   for(var i=buffer.length; i<bufferLength; i++) {
     result[i] = paddingToAdd;
   }
