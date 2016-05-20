@@ -1,4 +1,5 @@
-var bignum = require('bignum');
+var biguintFormat = require('biguint-format');
+var bigInteger = require('big-integer');
 
 var buffer;
 var offset = 0;
@@ -290,14 +291,14 @@ function readInt64() {
   buffer.copy(result, 0, offset, 8+offset);
 
   offset += 8;
-  return  {type: 6, value: bignum.fromBuffer(result, {size: 'auto', endian: 'low'})};
+  return  {type: 6, value: bigInteger(biguintFormat(result, 'dec', {format: 'LE'}))};
 }
 
 function readDateTime() {
-  var dateTime = readInt64().value.div(10000);
-  var epoch = bignum('62135596800000'); // 01/01/1970 : http://stackoverflow.com/a/7844741
-  var delta = dateTime.sub(epoch);
-  return {type: 14, value: new Date(delta.toNumber())};
+  var dateTime = readInt64().value.divide(10000);
+  var epoch = bigInteger('62135596800000'); // 01/01/1970 : http://stackoverflow.com/a/7844741
+  var delta = dateTime.subtract(epoch);
+  return {type: 14, value: new Date(delta.toJSNumber())};
 }
 
 function readInt32Array() {

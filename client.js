@@ -4,7 +4,7 @@ var cbaSerialization = require('./cbaSerialization');
 var crypto = require('crypto');
 var extractAES = require('./extractAES');
 var fs = require('fs');
-var Handlebars = require('Handlebars');
+var Handlebars = require('handlebars');
 var NodeRSA = require('node-rsa');
 var payloads = require('./payloads');
 var request = require('request-promise');
@@ -21,8 +21,8 @@ function init() {
   clientPublic = clientKey.exportKey('components-public').n.slice(1).toString("base64");
 
   console.log("Loading request templates");
-  loginRequest = Handlebars.compile(fs.readFileSync('./soap/loginRequest.xml').toString());
-  genericRequest = Handlebars.compile(fs.readFileSync('./soap/genericRequest.xml').toString());
+  loginRequest = Handlebars.compile(fs.readFileSync('soap/loginRequest.xml').toString());
+  genericRequest = Handlebars.compile(fs.readFileSync('soap/genericRequest.xml').toString());
 
   aesClient = {key: crypto.randomBytes(32), iv: crypto.randomBytes(32)};
   aesServer = null;
