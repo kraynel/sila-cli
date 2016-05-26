@@ -43,8 +43,14 @@ function execute(login, password, list, paySlipId, paySlipDate, outputPath) {
     cbaSerialization.setBuffer(serverResponse);
     result = cbaSerialization.readHashtable();
     deepInspect(result);
+    var userInfo = null;
+
     try {
-      var userInfo = result.value.$R.value.ONG1.value.P.value;
+      if(result.value.$R.value.ONG0 != null) {
+        userInfo = result.value.$R.value.ONG0.value.P.value;
+      } else if(result.value.$R.value.ONG1 != null) {
+        userInfo = result.value.$R.value.ONG1.value.P.value;
+      }
     } catch(e) {
       console.log("Bad user info.")
       process.exit(1);
