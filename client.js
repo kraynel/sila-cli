@@ -46,7 +46,7 @@ function execute(login, password, list, paySlipId, paySlipDate, outputPath) {
     var userInfo = null;
 
     try {
-      if(result.value.$R.value.ONG0 != null) {
+      if(result.value.$R.value.ONG0 != null && result.value.$R.value.ONG0.value.P != null) {
         userInfo = result.value.$R.value.ONG0.value.P.value;
       } else if(result.value.$R.value.ONG1 != null) {
         userInfo = result.value.$R.value.ONG1.value.P.value;
