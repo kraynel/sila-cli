@@ -1,9 +1,4 @@
-var mcrypt = require('./js-mcrypt/mcrypt');
-
-// RijndaelToDecrypt.KeySize = 0x100;
-// RijndaelToDecrypt.BlockSize = 0x100;
-// RijndaelToDecrypt.Mode = CipherMode.CBC;
-// RijndaelToDecrypt.Padding = PaddingMode.PKCS7;
+var mcrypt = require('js-rijndael');
 
 function extractAESKey(buffer, rsaPrivateKey) {
   var rsaEncryptedAesKeySize = buffer.readInt32LE(0);
@@ -35,14 +30,14 @@ function decrypt(encrypted, aesInfo) {
   var encryptedArray = encrypted.toJSON().data;
   var iv = aesInfo.iv.toJSON().data;
   var key = aesInfo.key.toJSON().data;
-  return new Buffer(mcrypt.Decrypt(encryptedArray, iv, key, 'rijndael-256', 'cbc'));
+  return new Buffer(mcrypt.decrypt(encryptedArray, iv, key, 'rijndael-256', 'cbc'));
 }
 
 function encrypt(clearText, aesInfo) {
   var clearTextArray = clearText.toJSON().data;
   var iv = aesInfo.iv.toJSON().data;
   var key = aesInfo.key.toJSON().data;
-  return new Buffer(mcrypt.Encrypt(clearTextArray, iv, key, 'rijndael-256', 'cbc'));
+  return new Buffer(mcrypt.encrypt(clearTextArray, iv, key, 'rijndael-256', 'cbc'));
 }
 
 
