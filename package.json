@@ -10,6 +10,7 @@
     "connect": "^3.4.1",
     "express": "^4.13.4",
     "handlebars": "^4.0.5",
+    "js-rijndael": "^1.0.0",
     "node-rsa": "^0.3.2",
     "request": "^2.72.0",
     "request-promise": "^3.0.0",
